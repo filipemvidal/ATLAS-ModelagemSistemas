@@ -1,13 +1,10 @@
 const usuarioLogado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
-
-if (!usuarioLogado) {
-    alert('Você precisa fazer login primeiro!');
-    window.location.href = 'index.html';
-}
-
 const closeBtns = document.querySelectorAll('.close');
 const add_modal = document.getElementById('addBookModal');
 const edit_modal = document.getElementById('editBookModal')
+const total_books = document.getElementById('total-number');
+const total_available = document.getElementById('total-available');
+const total_borrowed = document.getElementById('total-borrowed');
 
 function openBookModal(modal){
     modal.style.display = 'block';
@@ -39,7 +36,7 @@ async function handleAddBook(event) {
     };
     console.log('Adding book with data:', formData);
 
-    adicionarLivros(formData);
+    addBook(formData);
     document.getElementById("addBookForm").reset();
     closeBookModal(add_modal);
 }
@@ -122,6 +119,15 @@ function deleteBook() {
                 row.remove();
                 console.log('Livro deletado');
             }, 300);
+            
+            total_books.textContent = parseInt(total_books.textContent) - 1;
+            const statusCell = row.cells[5];
+            const statusBadge = statusCell.querySelector('.status-badge');
+            if (statusBadge.classList.contains('status-disponivel')) {
+                total_available.textContent = parseInt(total_available.textContent) - 1;
+            } else {
+                total_borrowed.textContent = parseInt(total_borrowed.textContent) - 1;
+            }
         }
     }
 }
@@ -131,7 +137,7 @@ function logout() {
     window.location.href = 'index.html';
 }
 
-function adicionarLivros(formData)
+function addBook(formData)
 {
     const actionColumn = usuarioLogado.role === 'Funcionario' ? `
         <td class="actions">
@@ -161,6 +167,39 @@ function adicionarLivros(formData)
                         <td>${formData.location}</td>
                         ${actionColumn}
                     </tr>`;
+    total_books.textContent = parseInt(total_books.textContent) + 1;
+    total_available.textContent = parseInt(total_available.textContent) + 1;
+}
+
+if(usuarioLogado.role !== 'Funcionario') {
+    document.getElementById('addBookBtn').style.display = 'none';
+    const actionHeader = document.querySelector('th.actions');
+    if (actionHeader) {
+        actionHeader.style.display = 'none';
+    }
+    const subtitle = document.querySelector('.logo p');
+    subtitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome}`;
+}
+
+function borrowBook() {
+    const row = event.target.closest('tr');
+    
+    if (row) {
+        const statusCell = row.cells[5];
+        const statusBadge = statusCell.querySelector('.status-badge');
+        
+        if (statusBadge.classList.contains('status-disponivel')
+            && confirm('Confirmar empréstimo do livro?')) {
+            statusBadge.classList.remove('status-disponivel');
+            statusBadge.classList.add('status-emprestado');
+            statusBadge.textContent = 'Emprestado';
+            total_available.textContent = parseInt(total_available.textContent) - 1;
+            total_borrowed.textContent = parseInt(total_borrowed.textContent) + 1;
+        } else {
+            alert('Este livro já está emprestado.');
+        }
+    }
+
 }
 
 const livros = [
@@ -206,34 +245,15 @@ const livros = [
     }
 ];
 
+if (!usuarioLogado) {
+    alert('Você precisa fazer login primeiro!');
+    window.location.href = 'index.html';
+}
+
 livros.forEach(livro => {
-    adicionarLivros(livro);
+    addBook(livro);
 });
 
-if(usuarioLogado.role !== 'Funcionario') {
-    document.getElementById('addBookBtn').style.display = 'none';
-    const actionHeader = document.querySelector('th.actions');
-    if (actionHeader) {
-        actionHeader.style.display = 'none';
-    }
-    const subtitle = document.querySelector('.logo p');
-    subtitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome}`;
-}
-
-function borrowBook() {
-    const row = event.target.closest('tr');
-    
-    if (row) {
-        const statusCell = row.cells[5];
-        const statusBadge = statusCell.querySelector('.status-badge');
-        
-        if (statusBadge.classList.contains('status-disponivel')
-            && confirm('Confirmar empréstimo do livro?')) {
-            statusBadge.classList.remove('status-disponivel');
-            statusBadge.classList.add('status-emprestado');
-            statusBadge.textContent = 'Emprestado';
-        } else {
-            alert('Este livro já está emprestado.');
-        }
-    }
-}
+total_books.textContent = livros.length;
+total_available.textContent = livros.length; 
+total_borrowed.textContent = 0;
