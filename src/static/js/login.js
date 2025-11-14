@@ -1,20 +1,21 @@
 const usuarios = [{
+        nome: "Alexandre",
         cpf:"12345678909",
         password: "1234",
         role: "Funcionario"
     },{
+        nome: "Ana",
         cpf:"76841799003",
         password: "1234",
         role: "Professor"  
     },{
+        nome: "Carlos",
         cpf:"77183381005",
         password: "1234",
         role: "Aluno"
     }
 ];
 
-
-// Função para mostrar/ocultar senha
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const icon = event.target.closest('.toggle-password').querySelector('i');
@@ -30,22 +31,17 @@ function togglePassword(inputId) {
     }
 }
 
-// Função para validar CPF
 function validarCPF(cpf) {
-    // Remove caracteres não numéricos
     cpf = cpf.replace(/[^\d]/g, '');
     
-    // Verifica se tem 11 dígitos
     if (cpf.length !== 11) {
         return false;
     }
     
-    // Verifica se todos os dígitos são iguais (ex: 111.111.111-11)
     if (/^(\d)\1{10}$/.test(cpf)) {
         return false;
     }
     
-    // Validação do primeiro dígito verificador
     let soma = 0;
     for (let i = 0; i < 9; i++) {
         soma += parseInt(cpf.charAt(i)) * (10 - i);
@@ -56,7 +52,6 @@ function validarCPF(cpf) {
         return false;
     }
     
-    // Validação do segundo dígito verificador
     soma = 0;
     for (let i = 0; i < 10; i++) {
         soma += parseInt(cpf.charAt(i)) * (11 - i);
@@ -71,42 +66,32 @@ function validarCPF(cpf) {
 }
 
 async function handleLogin(event) {
-    event.preventDefault(); // Previne o envio padrão do formulário
+    event.preventDefault();
 
-    // Pega os valores dos campos
     const cpf = document.getElementById('cpf').value;
     const senha = document.getElementById('senha').value;
 
-    // Validação básica
     if (!cpf || !senha) {
         alert('Por favor, preencha todos os campos!');
         return;
     }
 
-    // Validação do CPF usando a função validadora
     if (!validarCPF(cpf)) {
         alert('CPF inválido! Verifique o número digitado.');
         return;
     }
 
-    // Busca o usuário no array
     let usuarioEncontrado = null;
     
     for(let i=0; i<usuarios.length; i++){
         if(usuarios[i].cpf === cpf && usuarios[i].password === senha) {
             usuarioEncontrado = usuarios[i]
-            break; // Para o loop quando encontrar o usuário
+            break;
         }
     }
     
     if (usuarioEncontrado) {
-        // Salva as informações do usuário no sessionStorage
         sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
-        
-        // Ou use localStorage se quiser que persista mesmo após fechar o navegador
-        // localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
-        
-        // Redireciona para a página principal
         window.location.href = 'home.html';
     } else {
         alert('CPF ou senha incorretos!');

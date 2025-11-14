@@ -13,22 +13,17 @@ function togglePassword(inputId) {
     }
 }
 
-// Função para validar CPF
 function validarCPF(cpf) {
-    // Remove caracteres não numéricos
     cpf = cpf.replace(/[^\d]/g, '');
     
-    // Verifica se tem 11 dígitos
     if (cpf.length !== 11) {
         return false;
     }
     
-    // Verifica se todos os dígitos são iguais (ex: 111.111.111-11)
     if (/^(\d)\1{10}$/.test(cpf)) {
         return false;
     }
     
-    // Validação do primeiro dígito verificador
     let soma = 0;
     for (let i = 0; i < 9; i++) {
         soma += parseInt(cpf.charAt(i)) * (10 - i);
@@ -39,7 +34,6 @@ function validarCPF(cpf) {
         return false;
     }
     
-    // Validação do segundo dígito verificador
     soma = 0;
     for (let i = 0; i < 10; i++) {
         soma += parseInt(cpf.charAt(i)) * (11 - i);
@@ -56,9 +50,8 @@ function validarCPF(cpf) {
 
 async function handleRegister(event)
 {
-    event.preventDefault(); // Previne o envio padrão do formulário
+    event.preventDefault();
 
-    // Pega os valores dos campos
     const cpf = document.getElementById('cpf').value;
     const nome = document.getElementById('nome').value;
     const email = document.getElementById('email').value;
@@ -66,7 +59,6 @@ async function handleRegister(event)
     const senha = document.getElementById('senha').value;
     const confirmarSenha = document.getElementById('confirmar_senha').value;
 
-    // Validação do CPF usando a função validadora
     if (!validarCPF(cpf)) {
         alert('CPF inválido! Verifique o número digitado.');
         return;
@@ -77,8 +69,6 @@ async function handleRegister(event)
         return;
     }
 
-    // Aqui você pode adicionar a lógica de autenticação
-    // Por enquanto, vamos apenas simular um redirecionamento
     console.log('Cadasrando:', { nome, email, cpf, matricula, senha });
     
     document.getElementById('registerForm').reset();

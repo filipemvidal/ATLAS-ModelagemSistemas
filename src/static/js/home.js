@@ -1,13 +1,11 @@
-// Recupera as informações do usuário logado
 const usuarioLogado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
 
-// Verifica se há um usuário logado, senão redireciona para login
 if (!usuarioLogado) {
     alert('Você precisa fazer login primeiro!');
     window.location.href = 'index.html';
 }
 
-const closeBtns = document.querySelectorAll('.close'); // Retorna todos os elementos com a classe 'close'
+const closeBtns = document.querySelectorAll('.close');
 const add_modal = document.getElementById('addBookModal');
 const edit_modal = document.getElementById('editBookModal')
 
@@ -19,10 +17,8 @@ function closeBookModal(modal){
     modal.style.display = 'none';
 }
 
-// Itera sobre todos os botões de fechar
 closeBtns.forEach(btn => {
     btn.onclick = function() {
-        // Encontra o modal pai deste botão
         const modal = btn.closest('.modal');
         if (modal) {
             closeBookModal(modal);
@@ -59,11 +55,9 @@ function filterBooks(query) {
 }
 
 function editBook() {
-    // Encontra a linha da tabela que contém o livro
     const row = event.target.closest('tr');
     
     if (row) {
-        // Pega os dados da linha
         const cells = row.cells;
         const title = cells[0].textContent;
         const author = cells[1].textContent;
@@ -72,7 +66,6 @@ function editBook() {
         const year = cells[4].textContent;
         const location = cells[6].textContent;
         
-        // Preenche os campos do formulário de edição com os valores do livro
         document.getElementById('edit-title').value = title;
         document.getElementById('edit-author').value = author;
         document.getElementById('edit-isbn').value = isbn;
@@ -80,10 +73,8 @@ function editBook() {
         document.getElementById('edit-year').value = year;
         document.getElementById('edit-location').value = location;
         
-        // Armazena a linha que está sendo editada
         edit_modal.dataset.editingRow = row.rowIndex;
         
-        // Abre o modal de edição
         openBookModal(edit_modal);
     }
 }
@@ -91,12 +82,10 @@ function editBook() {
 async function handleEditBook(event) {
     event.preventDefault();
     
-    // Pega o índice da linha que está sendo editada
     const rowIndex = edit_modal.dataset.editingRow;
     const row = document.querySelector(`#booksTableBody tr:nth-child(${rowIndex})`);
     
     if (row) {
-        // Pega os novos valores do formulário
         const formData = {
             title: document.getElementById('edit-title').value,
             author: document.getElementById('edit-author').value,
@@ -106,7 +95,6 @@ async function handleEditBook(event) {
             location: document.getElementById('edit-location').value
         };
         
-        // Atualiza os valores na linha da tabela
         row.cells[0].textContent = formData.title;
         row.cells[1].textContent = formData.author;
         row.cells[2].textContent = formData.isbn;
@@ -116,22 +104,17 @@ async function handleEditBook(event) {
         
         console.log('Livro editado:', formData);
         
-        // Fecha o modal
         closeBookModal(edit_modal);
         
-        // Limpa o formulário
         document.getElementById('editBookForm').reset();
     }
 }
 
 function deleteBook() {
-    // Confirma se o usuário realmente quer deletar
     if (confirm('Tem certeza que deseja excluir este livro?')) {
-        // Encontra a linha da tabela que contém o livro
         const row = event.target.closest('tr');
         
         if (row) {
-            // Remove a linha da tabela com animação
             row.style.transition = 'opacity 0.3s';
             row.style.opacity = '0';
             
@@ -143,15 +126,8 @@ function deleteBook() {
     }
 }
 
-// Função de logout
 function logout() {
-    // Remove os dados do usuário do sessionStorage
     sessionStorage.removeItem('usuarioLogado');
-    
-    // Ou se usou localStorage:
-    // localStorage.removeItem('usuarioLogado');
-    
-    // Redireciona para a página de login
     window.location.href = 'index.html';
 }
 
@@ -164,6 +140,9 @@ function adicionarLivros(formData)
             </button>
             <button class="btn-icon" onclick="deleteBook()">
                 <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn-icon" onclick="borrowBook()">
+                <i class="fas fa-book-reader"></i>
             </button>
         </td>` : '';
     
@@ -184,7 +163,6 @@ function adicionarLivros(formData)
                     </tr>`;
 }
 
-// Lista de livros para popular a tabela
 const livros = [
     {
         title: "Dom Casmurro",
@@ -228,7 +206,6 @@ const livros = [
     }
 ];
 
-// Adiciona os livros na tabela ao carregar a página
 livros.forEach(livro => {
     adicionarLivros(livro);
 });
@@ -240,5 +217,23 @@ if(usuarioLogado.role !== 'Funcionario') {
         actionHeader.style.display = 'none';
     }
     const subtitle = document.querySelector('.logo p');
-    subtitle.style.display = 'none';
+    subtitle.textContent = `Bem-vindo(a), ${usuarioLogado.nome}`;
+}
+
+function borrowBook() {
+    const row = event.target.closest('tr');
+    
+    if (row) {
+        const statusCell = row.cells[5];
+        const statusBadge = statusCell.querySelector('.status-badge');
+        
+        if (statusBadge.classList.contains('status-disponivel')
+            && confirm('Confirmar empréstimo do livro?')) {
+            statusBadge.classList.remove('status-disponivel');
+            statusBadge.classList.add('status-emprestado');
+            statusBadge.textContent = 'Emprestado';
+        } else {
+            alert('Este livro já está emprestado.');
+        }
+    }
 }
