@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/readers.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>ATLAS | Gerenciar Leitores</title>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>ATLAS</h1>
+                <p>Gerencie o acervo da sua biblioteca</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn-icon" id="sign-out" onclick="logout()">
+                    <i class="	fa fa-sign-out"></i>
+                </button>
+            </div>
+        </header>
+
+        <input type="text" class="search-bar" placeholder="Buscar por Nome, CPF, Email ou Matrícula"
+            onkeyup="filterReaders(this.value)">
+
+        <div class="readers-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Email</th>
+                        <th>Matrícula</th>
+                    </tr>
+                </thead>
+                <tbody id="readersTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/readers.js"></script>
+</body>
+</html>

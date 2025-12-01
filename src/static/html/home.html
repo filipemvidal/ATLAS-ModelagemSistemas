@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>ATLAS</title>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>ATLAS</h1>
+                <p>Gerencie o acervo da sua biblioteca</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn-primary" id="openReadersBtn" onclick="window.location.href='readers.html'">
+                    <i class="fas fa-users"></i>
+                    Gerenciar Leitores
+                </button>
+                <button class="btn-primary" id="addBookBtn" onclick="openBookModal(add_modal)">
+                    <i class="fas fa-plus"></i>
+                    Adicionar Livro
+                </button>
+                <button class="btn-icon" id="sign-out" onclick="logout()">
+                    <i class="	fa fa-sign-out"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="stats-container">
+            <div class="stat-card total">
+                <h3>Total de Livros</h3>
+                <div class="number" id="total-number"> 0 </div>
+                <div class="icon">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+            <div class="stat-card available">
+                <h3>Disponíveis</h3>
+                <div class="number" id="total-available"> 0 </div>
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stat-card borrowed">
+                <h3>Emprestados</h3>
+                <div class="number" id="total-borrowed"> 0 </div>
+                <div class="icon">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+            </div>
+        </div>
+
+        <input type="text" class="search-bar" placeholder="Buscar por título, autor, ISBN ou categoria..."
+            onkeyup="filterBooks(this.value)">
+
+        <div class="books-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Editora</th>
+                        <th>Edição</th>
+                        <th>ISBN</th>
+                        <th>Categoria</th>
+                        <th>Ano</th>
+                        <th>Exemplares</th>
+                        <th>Localização</th>
+                        <th class="actions">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="booksTableBody">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Livro -->
+    <div id="addBookModal" class="modal add-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Livro</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addBookForm" onsubmit="handleAddBook(event)">
+                <div class="form-group">
+                    <label for="title">Título*</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="author">Autor*</label>
+                    <input type="text" id="author" name="author" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="publisher">Editora*</label>
+                        <input type="text" id="publisher" name="publisher" requires>
+                    </div>
+                    <div class="form-group">
+                        <label for="isbn">ISBN</label>
+                        <input type="text" id="isbn" name="isbn">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edition">Edição*</label>
+                        <input type="text" id="edition" name="edition" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Ano</label>
+                        <input type="number" id="year" name="year">
+                    </div>
+                    <div class="form-group">
+                        <label for="copies">Exemplares*</label>
+                        <input type="number" id="copies" name="copies" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="categories">Categorias (separadas por vírgula)*</label>
+                    <input type="text" id="categories" name="categories" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Localização*</label>
+                    <input type="text" id="location" name="location" placeholder="Ex: Estante A, prateleira 1" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Adicionar Livro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Livro -->
+    <div id="editBookModal" class="modal edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Livro</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="editBookForm" onsubmit="handleEditBook(event)">
+                <div class="form-group">
+                    <label for="edit-title">Título*</label>
+                    <input type="text" id="edit-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-author">Autor*</label>
+                    <input type="text" id="edit-author" name="author" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-publisher">Editora</label>
+                        <input type="text" id="edit-publisher" name="publisher" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-isbn">ISBN</label>
+                        <input type="text" id="edit-isbn" name="isbn">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-edition">Edição</label>
+                        <input type="text" id="edit-edition" name="edition" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-year">Ano</label>
+                        <input type="number" id="edit-year" name="year" >
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-copies">Exemplares*</label>
+                        <input type="number" id="edit-copies" name="copies" min="0" required>
+                    </div>
+                </div>
+                    <div class="form-group">
+                    <label for="edit-categories">Categorias (separadas por vírgula)*</label>
+                    <input type="text" id="edit-categories" name="categories" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-location">Localização*</label>
+                    <input type="text" id="edit-location" name="location" placeholder="Ex: Estante A, prateleira 1"
+                        required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes do Livro -->
+    <div id="bookDetailsModal" class="modal details-modal">
+        <div class="modal-content modal-details">
+            <div class="modal-header">
+                <h2>Detalhes do Livro</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="book-details-content">
+                <div class="details-section">
+                    <h3>Informações Gerais</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Título:</span>
+                        <span class="detail-value" id="detail-title"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Autor:</span>
+                        <span class="detail-value" id="detail-author"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Editora:</span>
+                        <span class="detail-value" id="detail-publisher"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Edição:</span>
+                        <span class="detail-value" id="detail-edition"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ISBN:</span>
+                        <span class="detail-value" id="detail-isbn"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Categorias:</span>
+                        <span class="detail-value" id="detail-categories"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Ano:</span>
+                        <span class="detail-value" id="detail-year"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Localização:</span>
+                        <span class="detail-value" id="detail-location"></span>
+                    </div>
+                </div>
+                
+                <div class="details-section">
+                    <h3>Disponibilidade de Exemplares</h3>
+                    <div class="copies-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="status-badge status-available">Disponíveis</span></td>
+                                    <td id="detail-available-copies" class="copies-number">0</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="status-badge status-borrowed">Emprestados</span></td>
+                                    <td id="detail-borrowed-copies" class="copies-number">0</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td><strong>Total de Exemplares</strong></td>
+                                    <td id="detail-total-copies" class="copies-number"><strong>0</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="modal-footer" id="details-modal-footer">
+                    <button class="btn-primary btn-borrow" id="btnBorrowFromDetails" onclick="borrowBook()">
+                        <i class="fas fa-book-reader"></i>
+                        Emprestar este Livro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal CPF do Leitor -->
+    <div id="borrowCpfModal" class="modal cpf-modal">
+        <div class="modal-content modal-cpf">
+            <div class="modal-header">
+                <h2>Emprestar Livro</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="borrowCpfForm" onsubmit="handleBorrowWithCpf(event)">
+                <div class="form-group">
+                    <label for="borrower-cpf">CPF do leitor*</label>
+                    <input type="text" id="borrower-cpf" name="borrowerCpf" placeholder="000.000.000-00" required maxlength="14">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Confirmar Empréstimo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/home.js"></script>
+</body>
+
+</html>

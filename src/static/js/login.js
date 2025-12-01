@@ -92,7 +92,7 @@ async function handleLogin(event) {
     
     if (usuarioEncontrado) {
         sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
-        window.location.href = 'home.html';
+        window.location.href = './src/static/html/home.html';
     } else {
         alert('CPF ou senha incorretos!');
     }
