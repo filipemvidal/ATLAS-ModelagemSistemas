@@ -4,12 +4,12 @@ const usuarios = [{
         password: "1234",
         role: "Funcionario"
     },{
-        nome: "Ana",
+        nome: "Professor",
         cpf:"76841799003",
         password: "1234",
         role: "Professor"  
     },{
-        nome: "Carlos",
+        nome: "Aluno",
         cpf:"77183381005",
         password: "1234",
         role: "Aluno"
